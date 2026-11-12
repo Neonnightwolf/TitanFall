@@ -1,4 +1,4 @@
-const state = { role: 'host', socket: null, room: '', name: '', id: '' };
+const state = { role: 'host', socket: null, room: '', name: '', id: '', sound: true, audioContext: null };
 const $ = (selector) => document.querySelector(selector);
 const onboarding = $('#onboarding');
 const app = $('#app');
@@ -12,6 +12,7 @@ document.querySelectorAll('.role-option').forEach((button) => button.addEventLis
 
 $('#join-form').addEventListener('submit', (event) => {
   event.preventDefault();
+  unlockAudio();
   state.name = $('#name-input').value.trim(); state.room = $('#room-input').value.trim().toUpperCase();
   if (!state.name || !state.room) return;
   state.socket = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`);
@@ -30,8 +31,8 @@ function handlePacket(packet) {
     $('#chat-eyebrow').textContent = state.role === 'host' ? 'RECEIVER STATION' : 'SENDER STATION';
     setConnection('LINK ESTABLISHED', true); renderMembers(packet.members); return;
   }
-  if (packet.type === 'presence') { renderMembers(packet.members); addSystem(`${packet.event.name} ${packet.event.kind === 'join' ? 'joined the channel' : 'disconnected'}.`); return; }
-  if (packet.type === 'chat') addMessage(packet);
+  if (packet.type === 'presence') { renderMembers(packet.members); addSystem(`${packet.event.name} ${packet.event.kind === 'join' ? 'joined the channel' : 'disconnected'}.`); if (packet.event.kind === 'join') playTone('presence'); return; }
+  if (packet.type === 'chat') { addMessage(packet); if (packet.from.id !== state.id) playTone('message'); }
 }
 
 function setConnection(label, online) { $('#connection-label').textContent = label; document.querySelector('.connection .pulse').style.background = online ? 'var(--lime)' : 'var(--orange)'; }
@@ -44,3 +45,33 @@ $('#message-form').addEventListener('submit', (event) => { event.preventDefault(
 $('#message-input').addEventListener('input', (event) => { $('#char-count').textContent = `${event.target.value.length} / 500`; });
 $('#copy-room').addEventListener('click', async () => { await navigator.clipboard?.writeText(state.room); const button = $('#copy-room'); button.textContent = '✓'; setTimeout(() => button.textContent = '⧉', 1300); });
 $('#leave-button').addEventListener('click', () => { state.socket?.close(); location.reload(); });
+
+$('#sound-toggle').addEventListener('click', () => {
+  state.sound = !state.sound;
+  const button = $('#sound-toggle');
+  button.textContent = state.sound ? '♫ SOUND ON' : '♫ SOUND OFF';
+  button.classList.toggle('off', !state.sound);
+  if (state.sound) { unlockAudio(); playTone('message'); }
+});
+
+function unlockAudio() {
+  if (!state.audioContext) state.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  if (state.audioContext.state === 'suspended') state.audioContext.resume();
+}
+
+function playTone(kind) {
+  if (!state.sound || !state.audioContext) return;
+  const context = state.audioContext;
+  const oscillator = context.createOscillator();
+  const gain = context.createGain();
+  const now = context.currentTime;
+  oscillator.type = 'square';
+  oscillator.frequency.setValueAtTime(kind === 'message' ? 660 : 420, now);
+  oscillator.frequency.exponentialRampToValueAtTime(kind === 'message' ? 880 : 520, now + 0.08);
+  gain.gain.setValueAtTime(0.0001, now);
+  gain.gain.exponentialRampToValueAtTime(0.045, now + 0.015);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.14);
+  oscillator.connect(gain).connect(context.destination);
+  oscillator.start(now);
+  oscillator.stop(now + 0.15);
+}
