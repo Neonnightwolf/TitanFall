@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#080b0b" />
+    <title>TITAN // OPERATIVE COMMS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="scanlines"></div>
+    <main class="shell">
+      <header class="topbar">
+        <div class="brand"><span class="brand-mark">⌁</span><div><span class="eyebrow">NORTHSTAR NETWORK</span><h1>TITAN <b>//</b> COMMS</h1></div></div>
+        <div class="connection"><span class="pulse"></span><span id="connection-label">LINK STANDBY</span><span class="latency">-- MS</span></div>
+      </header>
+
+      <section id="onboarding" class="onboarding panel">
+        <div class="boot-copy"><span class="eyebrow accent">SECURE CHANNEL INITIALIZATION</span><h2>Open a live<br><em>operative channel.</em></h2><p>Stand up a receiver station or join as a visitor. Share the room code with your squad to establish a multi-user uplink.</p></div>
+        <form id="join-form" class="join-form">
+          <label>CALLSIGN<input id="name-input" maxlength="24" placeholder="e.g. Cooper" required /></label>
+          <label>CHANNEL CODE<input id="room-input" maxlength="24" value="ALPHA-01" required /></label>
+          <div class="role-picker"><span class="label">STATION ROLE</span><div class="role-buttons"><button type="button" class="role-option active" data-role="host"><span>HOST</span><small>RECEIVER</small></button><button type="button" class="role-option" data-role="visitor"><span>VISITOR</span><small>SENDER</small></button></div></div>
+          <button class="button primary" type="submit">INITIALIZE UPLINK <span>↗</span></button>
+          <p class="form-note">Host: one per channel · Visitor: unlimited access</p>
+        </form>
+      </section>
+
+      <section id="app" class="app-grid hidden">
+        <aside class="sidebar panel">
+          <div class="side-head"><div><span class="eyebrow">ACTIVE CHANNEL</span><h3 id="room-display">ALPHA-01</h3></div><button id="copy-room" class="icon-button" title="Copy channel code">⧉</button></div>
+          <div class="room-state"><span class="pulse"></span><span id="room-state-label">CHANNEL OPEN</span></div>
+          <div class="divider"></div>
+          <div class="members-head"><span class="eyebrow">SQUAD ROSTER</span><strong id="member-count">0</strong></div>
+          <div id="members" class="members"></div>
+          <div class="side-foot"><span id="role-badge" class="role-badge">HOST // RECEIVER</span><button id="leave-button" class="text-button">DISCONNECT</button></div>
+        </aside>
+        <section class="chat panel">
+          <div class="chat-head"><div><span class="eyebrow" id="chat-eyebrow">RECEIVER STATION</span><h2>OPERATIVE <em>CHANNEL</em></h2></div><div class="signal-bars"><i></i><i></i><i></i><i></i></div></div>
+          <div id="messages" class="messages"><div class="system-message"><span class="message-tag">SYSTEM</span><p>Channel reserved. Waiting for squad transmissions...</p><time>NOW</time></div></div>
+          <form id="message-form" class="composer"><input id="message-input" maxlength="500" autocomplete="off" placeholder="Transmit a message..." required /><button class="send-button" type="submit" aria-label="Send message">➤</button></form>
+          <div class="composer-meta"><span>ENTER TO TRANSMIT</span><span id="char-count">0 / 500</span></div>
+        </section>
+      </section>
+      <footer><span>PROPERTY OF THE FRONTIER // COMMS NODE 07</span><span>ENCRYPTION: <b>AES-256</b> · BUILD 2.04.16</span></footer>
+    </main>
+    <div class="robot" aria-label="Animated Titan robot mascot"><div class="robot-glow"></div><div class="robot-head"><span class="antenna"></span><span class="eye"></span><span class="eye"></span></div><div class="robot-body"><span class="core"></span><span class="robot-line"></span></div><div class="robot-arm left"></div><div class="robot-arm right"></div><div class="robot-shadow"></div><div class="robot-caption">T-04 // ACTIVE</div></div>
+    <script src="/app.js"></script>
+  </body>
+</html>
